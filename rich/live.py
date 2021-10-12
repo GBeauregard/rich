@@ -12,7 +12,6 @@ from .live_render import LiveRender, VerticalOverflowMethod
 from .screen import Screen
 from .text import Text
 
-
 class _RefreshThread(Thread):
     """A thread that calls refresh() at regular intervals."""
 
@@ -73,7 +72,7 @@ class Live(JupyterMixin, RenderHook):
         self._restore_stdout: Optional[IO[str]] = None
         self._restore_stderr: Optional[IO[str]] = None
 
-        self._lock = RLock()
+        self._lock = self.console._lock
         self.ipy_widget: Optional[Any] = None
         self.auto_refresh = auto_refresh
         self._started: bool = False
@@ -147,18 +146,18 @@ class Live(JupyterMixin, RenderHook):
                 if self._alt_screen:
                     self.console.set_alt_screen(False)
 
-        if self._refresh_thread is not None:
-            self._refresh_thread.join()
-            self._refresh_thread = None
-        if self.transient and not self._alt_screen:
-            self.console.control(self._live_render.restore_cursor())
-        if self.ipy_widget is not None:  # pragma: no cover
-            if self.transient:
-                self.ipy_widget.close()
-            else:
-                # jupyter last refresh must occur after console pop render hook
-                # i am not sure why this is needed
-                self.refresh()
+            if self._refresh_thread is not None:
+                self._refresh_thread.join()
+                self._refresh_thread = None
+            if self.transient and not self._alt_screen:
+                self.console.control(self._live_render.restore_cursor())
+            if self.ipy_widget is not None:  # pragma: no cover
+                if self.transient:
+                    self.ipy_widget.close()
+                else:
+                    # jupyter last refresh must occur after console pop render hook
+                    # i am not sure why this is needed
+                    self.refresh()
 
     def __enter__(self) -> "Live":
         self.start(refresh=self._renderable is not None)
