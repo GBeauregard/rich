@@ -1,5 +1,5 @@
 from operator import itemgetter
-from typing import Callable, Iterable, NamedTuple, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Iterable, NamedTuple, Optional
 
 from . import errors
 from .protocol import is_renderable
@@ -100,8 +100,8 @@ class Measurement(NamedTuple):
         if hasattr(renderable, "__rich__"):
             renderable = renderable.__rich__()  # type: ignore
         if is_renderable(renderable):
-            get_console_width: Callable[
-                ["Console", "ConsoleOptions"], "Measurement"
+            get_console_width: Optional[
+                Callable[["Console", "ConsoleOptions"], "Measurement"]
             ] = getattr(renderable, "__rich_measure__", None)
             if get_console_width is not None:
                 render_width = (
