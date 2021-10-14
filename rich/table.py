@@ -6,6 +6,7 @@ from typing import (
     List,
     NamedTuple,
     Optional,
+    Sequence,
     Tuple,
     Union,
 )
@@ -204,7 +205,7 @@ class Table(JupyterMixin):
         self.title_justify: "JustifyMethod" = title_justify
         self.caption_justify: "JustifyMethod" = caption_justify
         self.highlight = highlight
-        self.row_styles: Iterable[StyleType] = list(row_styles or [])
+        self.row_styles: Sequence[StyleType] = list(row_styles or [])
         append_column = self.columns.append
         for header in headers:
             if isinstance(header, str):
